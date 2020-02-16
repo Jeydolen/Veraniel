@@ -8,9 +8,26 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Node2D",
+"class": "MoveStrategy",
+"language": "GDScript",
+"path": "res://MoveStrategy.gd"
+}, {
+"base": "MoveStrategy",
+"class": "NullMoveStrategy",
+"language": "GDScript",
+"path": "res://NullMoveStrategy.gd"
+}, {
+"base": "MoveStrategy",
+"class": "RandomMoveStrategy",
+"language": "GDScript",
+"path": "res://RandomMoveStrategy.gd"
+} ]
 _global_script_class_icons={
-
+"MoveStrategy": "",
+"NullMoveStrategy": "",
+"RandomMoveStrategy": ""
 }
 
 [application]
