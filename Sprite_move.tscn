@@ -47,6 +47,10 @@ __meta__ = {
 margin_top = 18.0
 margin_right = 150.0
 margin_bottom = 34.0
+<<<<<<< HEAD
+min_value = 1.0
+=======
+>>>>>>> f138f555963d8694104f68f2bebb38e186b98f6c
 max_value = 400.0
 value = 150.0
 __meta__ = {
@@ -75,6 +79,10 @@ __meta__ = {
 margin_top = 64.0
 margin_right = 150.0
 margin_bottom = 80.0
+<<<<<<< HEAD
+min_value = 1.0
+=======
+>>>>>>> f138f555963d8694104f68f2bebb38e186b98f6c
 max_value = 30.0
 value = 1.0
 
