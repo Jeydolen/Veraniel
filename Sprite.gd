@@ -21,53 +21,79 @@ func _ready():
 	viewport_transform = get_owner().get_transform()
 	print ("Window width : " + str(viewport_rect.size.x) + " Window height : " + str(viewport_rect.size.y))
 	print ("Window x : " + str(viewport_rect.position.x) + " Window y : " + str(viewport_rect.position.y))
+	
+	print ("Sprite width: " + str(sprite_dim.x) + "  height: " + str(sprite_dim.y))
+	
 	move_strategy = RandomMoveStrategy.new()
+	#move_strategy = TestMoveStrategy.new()
+	
 	#Exit app
 	#get_tree().quit()
-	
+
+
+#-------------------- _process() --------------------
 func _process(_delta):
 	
-	sprite_pos = Vector2(get_transform().x.x, get_transform().y.y)
-	move_strategy.update()
+	var t:Transform2D = get_transform()
+		
+	#sprite_pos = Vector2(get_transform().x.x, get_transform().y.y)
+	sprite_pos = t.origin
+	
 	viewport_transform = get_owner().get_transform()
 	#print ("Number = " + str (Sprite_direction))
-	var t:Transform2D = get_transform()
+	
 	Sprite_y.set_text("y : " + str(t.origin.y))
 	Sprite_x.set_text("x : " + str(t.origin.x))
 	#print ("sprite_pos.x = " + str (t.origin.x) + " sprite_pos.y = " + str (t.origin.y))
-#--------------------------------------------------------------------------#
-	if (move_strategy.get_direction() == MoveStrategy.Direction.RIGHT) : 
-		if sprite_pos.x + sprite_dim.x <= viewport_rect.size.x : 
-			t.origin.x = move_strategy.move(sprite_pos).x
-		else:
-			#---- Detect collision with RIGHT side ----
-			move_strategy.edge_hit(MoveStrategy.Direction.RIGHT)
-			#t.origin.x -= speed
+
 #---------------------------------------------------------------#
-	elif (move_strategy.get_direction() == MoveStrategy.Direction.LEFT) : 
-		if sprite_pos.x + sprite_dim.x <= viewport_rect.size.x : 
-			t.origin.x = move_strategy.move(sprite_pos).x
-		else:
-			#---- Detect collision with LEFT side ----
-			move_strategy.edge_hit(MoveStrategy.Direction.LEFT)
-			#t.origin.x += speed
-#---------------------------------------------------------------#
-	elif (move_strategy.get_direction() == MoveStrategy.Direction.DOWN) : 
-		if sprite_pos.x + sprite_dim.x <= viewport_rect.size.x : 
-			t.origin.x = move_strategy.move(sprite_pos).x
-		else:
-			#---- Detect collision with DOWN side ----
-			move_strategy.edge_hit(MoveStrategy.Direction.DOWN)
-			#t.origin.y += speed
+	var colliding_edge:int = check_collision_with_edge(t.origin)
+	var is_colliding:bool  = (colliding_edge != MoveStrategy.Direction.NONE)
+	
+	if (is_colliding):
+		move_strategy.edge_hit(colliding_edge)
+	else:
+		if (move_strategy.get_direction() == colliding_edge) : 
+			if (t.origin.x - sprite_dim.x/2 >= viewport_rect.position.x) : 
+				move_strategy.set_collision_state(false)
+				t.origin.x = move_strategy.move(t.origin).x
 #---------------------------------------------------------------#		
-	elif (move_strategy.get_direction() == MoveStrategy.Direction.UP) : 
-		if sprite_pos.x + sprite_dim.x <= viewport_rect.size.x : 
-			t.origin.x = move_strategy.move(sprite_pos).x
-		else:
-			#---- Detect collision with UP side ----
-			move_strategy.edge_hit(MoveStrategy.Direction.UP)
-			#t.origin.y -= speed
+		elif (move_strategy.get_direction() == MoveStrategy.Direction.UP) : 
+			if (t.origin.y - sprite_dim.y/2 >= viewport_rect.position.y) : 
+				move_strategy.set_collision_state(false)
+				t.origin.y = move_strategy.move(t.origin).y
 #---------------------------------------------------------------#
-	set_transform(t)
-	update()
+		elif (move_strategy.get_direction() == MoveStrategy.Direction.DOWN) : 
+			if (t.origin.y + sprite_dim.y/2 <= viewport_rect.size.y) : 
+				move_strategy.set_collision_state(false)
+				t.origin.y = move_strategy.move(t.origin).y
+#--------------------------------------------------------------------------#
+		elif (move_strategy.get_direction() == MoveStrategy.Direction.RIGHT) : 
+			if (t.origin.x + sprite_dim.x/2 <= viewport_rect.size.x) : 
+				move_strategy.set_collision_state(false)
+				t.origin.x = move_strategy.move(t.origin).x
+
+	move_strategy.update(self)
+#-------------------- _process()
+
+
+func check_collision_with_edge(position:Vector2) -> int:
+	#---------------------------------------------------------------#
+	if (move_strategy.get_direction() == MoveStrategy.Direction.LEFT) : 
+		if (position.x - sprite_dim.x/2 <= viewport_rect.position.x) : 
+			return MoveStrategy.Direction.LEFT
+	
+	elif (move_strategy.get_direction() == MoveStrategy.Direction.UP) : 
+		if (position.y - sprite_dim.y/2 <= viewport_rect.position.y) : 
+			return MoveStrategy.Direction.UP
+
+	elif (move_strategy.get_direction() == MoveStrategy.Direction.DOWN) : 
+		if (position.y + sprite_dim.y/2 >= viewport_rect.size.y) : 
+			return MoveStrategy.Direction.DOWN
+
+	elif (move_strategy.get_direction() == MoveStrategy.Direction.RIGHT) : 
+		if (position.x + sprite_dim.x/2 >= viewport_rect.size.x) : 
+			return MoveStrategy.Direction.RIGHT
+			
+	return MoveStrategy.Direction.NONE
 
